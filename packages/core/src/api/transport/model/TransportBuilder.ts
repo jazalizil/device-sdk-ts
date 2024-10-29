@@ -7,12 +7,9 @@ export interface TransportBuilder<
   T extends Transport,
   Config extends Record<string, unknown> = Record<string, unknown>,
 > {
-  setLoggerFactory(
-    loggerFactory: (name: string) => LoggerPublisherService,
-  ): TransportBuilder<T, Config>;
-  setDeviceModelDataSource(
-    deviceModelDataSource: DeviceModelDataSource,
-  ): TransportBuilder<T, Config>;
   setConfig(Config: Config): TransportBuilder<T, Config>;
-  build(): T;
+  build(
+    loggerFactory: (name: string) => LoggerPublisherService,
+    deviceModelDataSource: DeviceModelDataSource,
+  ): T;
 }

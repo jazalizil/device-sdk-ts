@@ -32,10 +32,10 @@ export class DefaultTransportService implements TransportService {
   addTransport<T extends Transport, Config extends Record<string, unknown>>(
     transportBuilder: TransportBuilder<T, Config>,
   ): Either<TransportDuplicatedError, TransportService> {
-    const transport = transportBuilder
-      .setDeviceModelDataSource(this._deviceModelDataSource)
-      .setLoggerFactory(this._loggerModuleFactory)
-      .build();
+    const transport = transportBuilder.build(
+      this._loggerModuleFactory,
+      this._deviceModelDataSource,
+    );
     if (this._transports.has(transport.getIdentifier())) {
       return Left(new TransportDuplicatedError());
     }
