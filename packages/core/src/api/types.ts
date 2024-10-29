@@ -22,6 +22,11 @@ export type { DeviceModelId } from "@api/device/DeviceModel";
 export type { ExecuteDeviceActionUseCaseArgs } from "@api/device-action/use-case/ExecuteDeviceActionUseCase";
 export type { DeviceSessionState } from "@api/device-session/DeviceSessionState";
 export type { DeviceSessionId } from "@api/device-session/types";
+export type {
+  DeviceConnection,
+  DisconnectHandler,
+  SendApduFnType,
+} from "@api/transport/model/DeviceConnection";
 export type { HexaString } from "@api/utils/HexaString";
 export type { ConnectUseCaseArgs } from "@internal/discovery/use-case/ConnectUseCase";
 export type { DisconnectUseCaseArgs } from "@internal/discovery/use-case/DisconnectUseCase";

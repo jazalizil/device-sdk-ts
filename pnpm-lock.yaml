@@ -83,6 +83,9 @@ importers:
       '@ledgerhq/device-signer-kit-ethereum':
         specifier: workspace:*
         version: link:../../packages/signer/keyring-eth
+      '@ledgerhq/device-transport-kit-web-hid':
+        specifier: workspace:*
+        version: link:../../packages/transport/web-hid
       '@ledgerhq/react-ui':
         specifier: ^0.16.2
         version: 0.16.2(@emotion/is-prop-valid@1.2.1)(@types/react@18.3.11)(react-dom@18.3.1(react@18.3.1))(react-native-svg@15.3.0(react-native@0.74.3(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.11)(react@18.3.1))(react@18.3.1))(react@18.3.1)(styled-components@5.3.11(@babel/core@7.24.7)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1))
@@ -555,6 +558,58 @@ importers:
       '@ledgerhq/tsconfig-dsdk':
         specifier: workspace:*
         version: link:../config/typescript
+
+  packages/transport/web-hid:
+    dependencies:
+      bs58:
+        specifier: ^6.0.0
+        version: 6.0.0
+      inversify:
+        specifier: ^6.0.3
+        version: 6.0.3
+      inversify-logger-middleware:
+        specifier: ^3.1.0
+        version: 3.1.0
+      purify-ts:
+        specifier: ^2.1.0
+        version: 2.1.0
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
+      uuid:
+        specifier: ^10.0.0
+        version: 10.0.0
+      xstate:
+        specifier: ^5.18.2
+        version: 5.18.2
+    devDependencies:
+      '@ledgerhq/device-management-kit':
+        specifier: workspace:*
+        version: link:../../core
+      '@ledgerhq/esbuild-tools':
+        specifier: workspace:*
+        version: link:../../tools/esbuild-tools
+      '@ledgerhq/eslint-config-dsdk':
+        specifier: workspace:*
+        version: link:../../config/eslint
+      '@ledgerhq/jest-config-dsdk':
+        specifier: workspace:*
+        version: link:../../config/jest
+      '@ledgerhq/prettier-config-dsdk':
+        specifier: workspace:*
+        version: link:../../config/prettier
+      '@ledgerhq/tsconfig-dsdk':
+        specifier: workspace:*
+        version: link:../../config/typescript
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
+      '@types/w3c-web-hid':
+        specifier: ^1.0.6
+        version: 1.0.6
 
   packages/trusted-apps:
     dependencies:

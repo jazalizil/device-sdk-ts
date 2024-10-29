@@ -41,6 +41,7 @@ export {
 export { DeviceModel, DeviceModelId } from "./device/DeviceModel";
 export { DeviceStatus } from "./device/DeviceStatus";
 export { ApduResponse } from "./device-session/ApduResponse";
+export * as FramerConst from "./device-session/data/FramerConst";
 export { DeviceSdk } from "./DeviceSdk";
 export { LedgerDeviceSdkBuilder as DeviceSdkBuilder } from "./DeviceSdkBuilder";
 export { DeviceExchangeError, UnknownDeviceExchangeError } from "./Error";
@@ -52,6 +53,7 @@ export { BuiltinTransports } from "./transport/model/TransportIdentifier";
 export * from "./types";
 export * from "@api/apdu/utils/AppBuilderError";
 export { InvalidStatusWordError } from "@api/command/Errors";
+export type { DeviceModelDataSource } from "@api/device/DeviceModelDataSource";
 export {
   type DeviceAction,
   type DeviceActionIntermediateValue,
@@ -121,8 +123,38 @@ export {
   type DeviceSessionState,
   DeviceSessionStateType,
 } from "@api/device-session/DeviceSessionState";
-export { type SdkError } from "@api/Error";
+export { FramerUtils } from "@api/device-session/utils/FramerUtils";
+export {
+  GeneralSdkError,
+  type SdkError,
+  TransportInitializationError,
+} from "@api/Error";
+export type { LoggerPublisherService } from "@api/logger-subscriber/model/LoggerPublisherService";
 export { MockTransportBuilder } from "@api/transport/MockTransportBuilder";
+export {
+  BleDeviceGattServerError,
+  BleTransportNotSupportedError,
+  type ConnectError,
+  DeviceAlreadyConnectedError,
+  DeviceNotInitializedError,
+  DeviceNotRecognizedError,
+  DisconnectError,
+  NoAccessibleDeviceError,
+  OpeningConnectionError,
+  ReconnectionFailedError,
+  SendApduConcurrencyError,
+  TransportDuplicatedError,
+  TransportNotSupportedError,
+  UnknownDeviceError,
+} from "@api/transport/model/Errors";
+export { type TransportBuilder } from "@api/transport/model/TransportBuilder";
+export { TransportConnectedDevice } from "@api/transport/model/TransportConnectedDevice";
+export { TransportDeviceModel } from "@api/transport/model/TransportDeviceModel";
+export { type TransportDiscoveredDevice } from "@api/transport/model/TransportDiscoveredDevice";
+export { type ApduReceiverService } from "@api/transport/service/ApduReceiverService";
+export { type ApduSenderService } from "@api/transport/service/ApduSenderService";
+export { DefaultApduReceiverService } from "@api/transport/service/DefaultApduReceiverService";
+export { DefaultApduSenderService } from "@api/transport/service/DefaultApduSenderService";
 export { WebBleTransportBuilder } from "@api/transport/WebBleTransportBuilder";
 export { WebHidTransportBuilder } from "@api/transport/WebHidTransportBuilder";
 export { base64StringToBuffer, isBase64String } from "@api/utils/Base64String";
@@ -131,7 +163,6 @@ export {
   hexaStringToBuffer,
   isHexaString,
 } from "@api/utils/HexaString";
-// @TODO delete those internal exports once transports will be externalized
 export { WebBleTransport } from "@internal/transport/ble/transport/WebBleTransport";
 export { MockTransport } from "@internal/transport/mockserver/MockserverTransport";
 export { WebUsbHidTransport } from "@internal/transport/usb/transport/WebUsbHidTransport";

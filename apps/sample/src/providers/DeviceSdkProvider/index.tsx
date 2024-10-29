@@ -7,10 +7,10 @@ import {
   DeviceSdkBuilder,
   MockTransportBuilder,
   WebBleTransportBuilder,
-  WebHidTransportBuilder,
   WebLogsExporterLogger,
 } from "@ledgerhq/device-management-kit";
 import { FlipperSdkLogger } from "@ledgerhq/device-management-kit-flipper-plugin-client";
+import { WebHidTransportBuilder } from "@ledgerhq/device-transport-kit-web-hid";
 
 import { useHasChanged } from "@/hooks/useHasChanged";
 import { useSdkConfigContext } from "@/providers/SdkConfig";
