@@ -42,7 +42,7 @@
       "outputs": []
     },
     "health-check": {
-      "dependsOn": ["build", "prettier", "lint", "typecheck"]
+      "dependsOn": ["^build", "^prettier", "^lint", "^typecheck"]
     }
   }
 }
