@@ -5,7 +5,7 @@
 "@ledgerhq/device-signer-kit-ethereum": patch
 "@ledgerhq/tsconfig-dsdk": patch
 "@ledgerhq/prettier-config-dsdk": patch
-"@ledgerhq/device-transport-kit-mock-client": patch
+"@ledgerhq/device-mockserver-client": patch
 "@ledgerhq/eslint-config-dsdk": patch
 "@ledgerhq/device-sdk-trusted-apps": patch
 "@ledgerhq/jest-config-dsdk": patch
