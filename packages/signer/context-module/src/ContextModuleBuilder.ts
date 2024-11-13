@@ -2,6 +2,7 @@ import { externalPluginTypes } from "@/external-plugin/di/externalPluginTypes";
 import { forwardDomainTypes } from "@/forward-domain/di/forwardDomainTypes";
 import { nftTypes } from "@/nft/di/nftTypes";
 import { tokenTypes } from "@/token/di/tokenTypes";
+import { transactionTypes } from "@/transaction/di/transactionTypes";
 import { typedDataTypes } from "@/typed-data/di/typedDataTypes";
 
 import { type ContextModuleConfig } from "./config/model/ContextModuleConfig";
@@ -10,6 +11,7 @@ import { type ForwardDomainContextLoader } from "./forward-domain/domain/Forward
 import { type NftContextLoader } from "./nft/domain/NftContextLoader";
 import { type ContextLoader } from "./shared/domain/ContextLoader";
 import { type TokenContextLoader } from "./token/domain/TokenContextLoader";
+import { type TransactionContextLoader } from "./transaction/domain/TransactionContextLoader";
 import { type TypedDataContextLoader } from "./typed-data/domain/TypedDataContextLoader";
 import { type ContextModule } from "./ContextModule";
 import { DefaultContextModule } from "./DefaultContextModule";
@@ -94,6 +96,9 @@ export class ContextModuleBuilder {
       ),
       container.get<NftContextLoader>(nftTypes.NftContextLoader),
       container.get<TokenContextLoader>(tokenTypes.TokenContextLoader),
+      container.get<TransactionContextLoader>(
+        transactionTypes.TransactionContextLoader,
+      ),
     ];
     const defaultTypedDataLoader = container.get<TypedDataContextLoader>(
       typedDataTypes.TypedDataContextLoader,
