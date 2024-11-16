@@ -1,39 +1,43 @@
-import {
-  BuiltinTransports,
-  DeviceManagementKit,
-  DeviceManagementKitBuilder,
-} from "@ledgerhq/device-management-kit";
-import {
+import type {
   Account,
-  FinalExecutionOutcome,
-  getActiveAccount,
   HardwareWallet,
   JsonStorageService,
   Optional,
-  Subscription,
   Transaction,
   WalletBehaviourFactory,
   WalletModuleFactory,
 } from "@near-wallet-selector/core";
+import { getActiveAccount } from "@near-wallet-selector/core";
 import { LoggerService } from "@near-wallet-selector/core/src/lib/services";
 import { signTransactions } from "@near-wallet-selector/wallet-utils";
-import * as NearApi from "near-api-js";
+import { isMobile } from "is-mobile";
+import type { Signer } from "near-api-js";
+import * as nearAPI from "near-api-js";
+import type { FinalExecutionOutcome } from "near-api-js/lib/providers";
 
-import { SignerNearBuilder } from "@root/lib/types";
+import icon from "./icon";
+import type { Subscription } from "./ledger-client";
+import { isLedgerSupported, LedgerClient } from "./ledger-client";
 
 interface LedgerAccount extends Account {
   derivationPath: string;
   publicKey: string;
 }
-interface LedgerState {
-  dmk: DeviceManagementKit;
-  accounts: Array<LedgerAccount>;
-  subscriptions: Array<Subscription>;
-}
 
 interface ValidateAccessKeyParams {
   accountId: string;
   publicKey: string;
+}
+
+interface LedgerState {
+  client: LedgerClient;
+  accounts: Array<LedgerAccount>;
+  subscriptions: Array<Subscription>;
+}
+
+export interface LedgerParams {
+  iconUrl?: string;
+  deprecated?: boolean;
 }
 
 export const STORAGE_ACCOUNTS = "accounts";
@@ -44,20 +48,15 @@ const setupLedgerState = async (
 ): Promise<LedgerState> => {
   const accounts =
     await storage.getItem<Array<LedgerAccount>>(STORAGE_ACCOUNTS);
-  const dmk = new DeviceManagementKitBuilder()
-    .addLogger(logger)
-    .addTransport(BuiltinTransports.USB)
-    .addTransport(BuiltinTransports.BLE)
-    .build();
 
   return {
-    dmk,
+    client: new LedgerClient(logger),
     subscriptions: [],
     accounts: accounts || [],
   };
 };
 
-const LedgerWallet: WalletBehaviourFactory<HardwareWallet> = async ({
+const Ledger: WalletBehaviourFactory<HardwareWallet> = async ({
   options,
   store,
   provider,
@@ -66,14 +65,46 @@ const LedgerWallet: WalletBehaviourFactory<HardwareWallet> = async ({
   metadata,
 }) => {
   const _state = await setupLedgerState(storage, logger);
-  let signer: NearApi.Signer;
-  let sessionId: string;
+
+  const signer: Signer = {
+    createKey: () => {
+      throw new Error("Not implemented");
+    },
+    getPublicKey: async (accountId) => {
+      const account = _state.accounts.find((a) => a.accountId === accountId);
+
+      if (!account) {
+        throw new Error("Failed to find public key for account");
+      }
+
+      return nearAPI.utils.PublicKey.from(account.publicKey);
+    },
+    signMessage: async (message, accountId) => {
+      const account = _state.accounts.find((a) => a.accountId === accountId);
+
+      if (!account) {
+        throw new Error("Failed to find account for signing");
+      }
+
+      const signature = await _state.client.signMessage({
+        message: message.toString(),
+        derivationPath: account.derivationPath,
+      });
+
+      return {
+        signature,
+        publicKey: nearAPI.utils.PublicKey.from(account.publicKey),
+      };
+    },
+  };
+
   const getAccounts = (): Array<Account> => {
     return _state.accounts.map((x) => ({
       accountId: x.accountId,
       publicKey: "ed25519:" + x.publicKey,
     }));
   };
+
   const cleanup = () => {
     _state.subscriptions.forEach((subscription) => subscription.remove());
 
@@ -83,13 +114,23 @@ const LedgerWallet: WalletBehaviourFactory<HardwareWallet> = async ({
     storage.removeItem(STORAGE_ACCOUNTS);
   };
 
-  const signOut = () => {
-    if (sessionId) {
-      _state.dmk.disconnect({ sessionId });
+  const signOut = async () => {
+    if (_state.client.isConnected()) {
+      await _state.client.disconnect().catch((err) => {
+        logger.log("Failed to disconnect device");
+        logger.error(err);
+      });
     }
 
     cleanup();
-    return Promise.resolve();
+  };
+
+  const connectLedgerDevice = async () => {
+    if (_state.client.isConnected()) {
+      return;
+    }
+
+    await _state.client.connect();
   };
 
   const validateAccessKey = ({
@@ -117,6 +158,7 @@ const LedgerWallet: WalletBehaviourFactory<HardwareWallet> = async ({
       },
     );
   };
+
   const transformTransactions = (
     transactions: Array<Optional<Transaction, "signerId" | "receiverId">>,
   ): Array<Transaction> => {
@@ -138,27 +180,6 @@ const LedgerWallet: WalletBehaviourFactory<HardwareWallet> = async ({
         receiverId: transaction.receiverId || contract.contractId,
         actions: transaction.actions,
       };
-    });
-  };
-
-  const connectLedgerDevice = async () => {
-    return new Promise((resolve, reject) => {
-      _state.dmk
-        .startDiscovering({ transport: BuiltinTransports.USB })
-        .subscribe({
-          next: async (device) => {
-            sessionId = await _state.dmk.connect({ device });
-            signer = new SignerNearBuilder({
-              dmk: _state.dmk,
-              sessionId,
-            }).build("web");
-
-            resolve(void 0);
-          },
-          error: (err) => {
-            reject(err);
-          },
-        });
     });
   };
 
@@ -202,6 +223,12 @@ const LedgerWallet: WalletBehaviourFactory<HardwareWallet> = async ({
       return getAccounts();
     },
 
+    async verifyOwner({ message }) {
+      logger.log("Ledger:verifyOwner", { message });
+
+      throw new Error(`Method not supported by ${metadata.name}`);
+    },
+
     async signAndSendTransaction({ signerId, receiverId, actions }) {
       logger.log("signAndSendTransaction", { signerId, receiverId, actions });
 
@@ -220,6 +247,7 @@ const LedgerWallet: WalletBehaviourFactory<HardwareWallet> = async ({
 
       return provider.sendTransaction(signedTransactions[0]!);
     },
+
     async signAndSendTransactions({ transactions }) {
       logger.log("signAndSendTransactions", { transactions });
 
@@ -244,25 +272,27 @@ const LedgerWallet: WalletBehaviourFactory<HardwareWallet> = async ({
 
       return results;
     },
-    async verifyOwner({ message }) {
-      logger.log("Ledger:verifyOwner", { message });
-
-      throw new Error(`Method not supported by ${metadata.name}`);
-    },
     async getPublicKey(derivationPath: string) {
       await connectLedgerDevice();
 
-      return signer.getPublicKey({ derivationPath });
+      return await _state.client.getPublicKey({ derivationPath });
     },
   };
 };
 
 export function setupLedger({
-  iconUrl = "",
+  iconUrl = icon,
   deprecated = false,
-} = {}): WalletModuleFactory<HardwareWallet> {
+}: LedgerParams = {}): WalletModuleFactory<HardwareWallet> {
   return async () => {
-    return Promise.resolve({
+    const mobile = isMobile();
+    const supported = isLedgerSupported();
+
+    if (mobile) {
+      return null;
+    }
+
+    return {
       id: "ledger",
       type: "hardware",
       metadata: {
@@ -271,9 +301,9 @@ export function setupLedger({
           "Protect crypto assets with the most popular hardware wallet.",
         iconUrl,
         deprecated,
-        available: true,
+        available: supported,
       },
-      init: LedgerWallet,
-    });
+      init: Ledger,
+    };
   };
 }

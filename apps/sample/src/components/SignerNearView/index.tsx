@@ -3,13 +3,16 @@ import {
   type GetPublicKeyDAError,
   type GetPublicKeyDAIntermediateValue,
   type GetPublicKeyDAOutput,
+  GetVersionDAError,
+  GetVersionDAIntermediateValue,
+  GetVersionDAOutput,
   type GetWalletIdDAError,
   type GetWalletIdDAIntermediateValue,
   type GetWalletIdDAOutput,
+  SignDAError,
+  type SignDAIntermediateValue,
+  SignDAOutput,
   SignerNearBuilder,
-  // type SignMessageDAError,
-  // type SignMessageDAInput,
-  // type SignMessageDAIntermediateValue,
 } from "@ledgerhq/device-signer-kit-near";
 
 import { DeviceActionsList } from "@/components/DeviceActionsView/DeviceActionsList";
@@ -77,27 +80,42 @@ export const SignerNearView: React.FC<{ sessionId: string }> = ({
         GetWalletIdDAError,
         GetWalletIdDAIntermediateValue
       >,
-      // {
-      //   title: "Sign message",
-      //   description:
-      //     "Perform all the actions necessary sign a message from the device",
-      //   executeDeviceAction: (args, inspect) => {
-      //     return signer.signMessage(args, inspect);
-      //   },
-      //   deviceModelId,
-      //   initialValues: {
-      //     message: "",
-      //     derivationPath: DEFAULT_DERIVATION_PATH,
-      //   },
-      // } satisfies DeviceActionProps<
-      //   SignMessageDAInput,
-      //   {
-      //     message: string;
-      //     derivationPath: string;
-      //   },
-      //   SignMessageDAError,
-      //   SignMessageDAIntermediateValue
-      // >,
+      {
+        title: "Get version",
+        description:
+          "Perform all the actions necessary to get a near wallet app version from the device",
+        executeDeviceAction: (inspect) => {
+          return signer.getVersion(inspect);
+        },
+        deviceModelId,
+        initialValues: undefined,
+      } satisfies DeviceActionProps<
+        GetVersionDAOutput,
+        undefined,
+        GetVersionDAError,
+        GetVersionDAIntermediateValue
+      >,
+      {
+        title: "Sign message",
+        description:
+          "Perform all the actions necessary sign a message from the device",
+        executeDeviceAction: (args, inspect) => {
+          return signer.signMessage(args, inspect);
+        },
+        deviceModelId,
+        initialValues: {
+          message: "",
+          derivationPath: DEFAULT_DERIVATION_PATH,
+        },
+      } satisfies DeviceActionProps<
+        SignDAOutput,
+        {
+          message: string;
+          derivationPath: string;
+        },
+        SignDAError,
+        SignDAIntermediateValue
+      >,
     ],
     [deviceModelId, signer],
   );

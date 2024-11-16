@@ -40,7 +40,7 @@
     "./lib"
   ],
   "devDependencies": {
-    "@ledgerhq/device-management-kit": "^0.4.0",
+    "@ledgerhq/device-management-kit": "workspace:*",
     "@ledgerhq/device-signer-kit-near": "workspace:*",
     "@ledgerhq/esbuild-tools": "workspace:*",
     "@ledgerhq/eslint-config-dsdk": "workspace:*",
@@ -50,13 +50,15 @@
     "@near-wallet-selector/core": "^8.9.13",
     "@near-wallet-selector/wallet-utils": "^8.9.13",
     "is-mobile": "^5.0.0",
-    "near-api-js": "^5.0.1"
+    "near-api-js": "^5.0.1",
+    "rxjs": "^7.8.1"
   },
   "peerDependencies": {
+    "@ledgerhq/device-management-kit": "workspace:*",
     "@near-wallet-selector/core": "^8.9.13",
     "@near-wallet-selector/wallet-utils": "^8.9.13",
     "is-mobile": "^5.0.0",
     "near-api-js": "^5.0.1",
-    "@ledgerhq/device-management-kit": "workspace:*"
+    "rxjs": "^7.8.1"
   }
 }

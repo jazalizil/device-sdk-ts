@@ -74,16 +74,6 @@ export class GetPublicKeyCommand
         error: new InvalidStatusWordError("Unable to extract public key"),
       });
     }
-    try {
-      console.log(
-        new NearApi.utils.PublicKey({
-          keyType: NearApi.utils.key_pair.KeyType.ED25519,
-          data: rawPublicKey,
-        }).toString(),
-      );
-    } catch (err) {
-      console.error(err);
-    }
 
     return CommandResultFactory({
       data: {

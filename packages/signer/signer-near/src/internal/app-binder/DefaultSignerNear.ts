@@ -7,14 +7,23 @@ import { inject } from "inversify";
 
 import { GetPublicKeyCommandArgs } from "@api/app-binder/GetPublicKeyCommandTypes";
 import { GetPublicKeyDAReturnType } from "@api/app-binder/GetPublicKeyDeviceActionTypes";
+import { GetVersionDAReturnType } from "@api/app-binder/GetVersionDeviceActionTypes";
 import type { GetWalletIdCommandArgs } from "@api/app-binder/GetWalletIdCommandTypes";
 import { GetWalletIdDAReturnType } from "@api/app-binder/GetWalletIdDeviceActionTypes";
-import { SignMessageDAReturnType } from "@api/app-binder/SignMessageDeviceActionTypes";
+import { SignDAReturnType } from "@api/app-binder/SignDeviceActionTypes";
 import { SignerNear } from "@api/SignerNear";
 import { GetPublicKeyCommand } from "@internal/app-binder/command/GetPublicKeyCommand";
+import { GetVersionCommand } from "@internal/app-binder/command/GetVersionCommand";
 import { GetWalletIdCommand } from "@internal/app-binder/command/GetWalletIdCommand";
-import { SignMessageDeviceAction } from "@internal/app-binder/device-action/SignMessageDeviceAction";
-import type { SendSignMessageTaskArgs } from "@internal/app-binder/task/SendSignMessageTask";
+import { SignDeviceAction } from "@internal/app-binder/device-action/SignDeviceAction";
+import {
+  SignMessageTask,
+  SignMessageTaskArgs,
+} from "@internal/app-binder/task/SignMessageTask";
+import {
+  SignTransactionTask,
+  SignTransactionTaskArgs,
+} from "@internal/app-binder/task/SignTransactionTask";
 import { externalTypes } from "@internal/externalTypes";
 
 export class DefaultSignerNear implements SignerNear {
@@ -22,6 +31,19 @@ export class DefaultSignerNear implements SignerNear {
     @inject(externalTypes.Dmk) private _dmk: DeviceManagementKit,
     @inject(externalTypes.SessionId) private _sessionId: string,
   ) {}
+  getVersion(inspect?: boolean): GetVersionDAReturnType {
+    return this._dmk.executeDeviceAction({
+      sessionId: this._sessionId,
+      deviceAction: new SendCommandInAppDeviceAction({
+        input: {
+          command: new GetVersionCommand(),
+          appName: "NEAR",
+          requiredUserInteraction: UserInteractionRequired.None,
+        },
+        inspect,
+      }),
+    });
+  }
   getWalletId(
     args: GetWalletIdCommandArgs,
     inspect?: boolean,
@@ -56,14 +78,27 @@ export class DefaultSignerNear implements SignerNear {
       }),
     });
   }
-  signMessage(
-    args: SendSignMessageTaskArgs,
-    inspect?: boolean,
-  ): SignMessageDAReturnType {
+  signMessage(args: SignMessageTaskArgs, inspect?: boolean): SignDAReturnType {
     return this._dmk.executeDeviceAction({
       sessionId: this._sessionId,
-      deviceAction: new SignMessageDeviceAction({
-        input: args,
+      deviceAction: new SignDeviceAction({
+        input: {
+          task: new SignMessageTask(args),
+        },
+        inspect,
+      }),
+    });
+  }
+  signTransaction(
+    args: SignTransactionTaskArgs,
+    inspect?: boolean,
+  ): SignDAReturnType {
+    return this._dmk.executeDeviceAction({
+      sessionId: this._sessionId,
+      deviceAction: new SignDeviceAction({
+        input: {
+          task: new SignTransactionTask(args),
+        },
         inspect,
       }),
     });

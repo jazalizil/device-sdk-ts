@@ -14,9 +14,9 @@ import { Just, type Maybe, Nothing } from "purify-ts";
 // const R_LENGTH = 32;
 // const S_LENGTH = 32;
 
-export type SignMessageCommandResponse = Maybe<Uint8Array>;
+export type SignTransactionCommandResponse = Maybe<Uint8Array>;
 
-export type SignMessageCommandArgs = {
+export type SignTransactionCommandArgs = {
   /**
    * The transaction to sign in max 150 bytes chunks
    */
@@ -27,31 +27,32 @@ export type SignMessageCommandArgs = {
   readonly isFirstChunk: boolean;
 };
 
-export class SignMessageCommand
-  implements Command<SignMessageCommandResponse, SignMessageCommandArgs>
+export class SignTransactionCommand
+  implements
+    Command<SignTransactionCommandResponse, SignTransactionCommandArgs>
 {
-  args: SignMessageCommandArgs;
+  args: SignTransactionCommandArgs;
 
-  constructor(args: SignMessageCommandArgs) {
+  constructor(args: SignTransactionCommandArgs) {
     this.args = args;
   }
 
   getApdu(): Apdu {
     const { data, isFirstChunk } = this.args;
 
-    const signNearTransactionArgs: ApduBuilderArgs = {
+    const signEthTransactionArgs: ApduBuilderArgs = {
       cla: 0x80,
       ins: 0x02,
       p1: isFirstChunk ? 0x00 : 0x80,
       p2: "W".charCodeAt(0),
     };
-    const builder = new ApduBuilder(signNearTransactionArgs);
+    const builder = new ApduBuilder(signEthTransactionArgs);
     return builder.addBufferToData(data).build();
   }
 
   parseResponse(
     response: ApduResponse,
-  ): CommandResult<SignMessageCommandResponse> {
+  ): CommandResult<SignTransactionCommandResponse> {
     // const parser = new ApduParser(response);
 
     if (!CommandUtils.isSuccessResponse(response)) {
