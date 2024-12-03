@@ -25,6 +25,7 @@
     "signer-utils": "pnpm --filter @ledgerhq/signer-utils",
     "mockserver-client": "pnpm --filter @ledgerhq/device-mockserver-client",
     "trusted-apps": "pnpm --filter @ledgerhq/device-sdk-trusted-apps",
+    "near-wallet": "pnpm --filter @near-wallet-selector/ledger",
     "ui": "pnpm --filter @ledgerhq/device-sdk-ui",
     "transports": "pnpm --filter @ledgerhq/device-transport-*",
     "transport-web-hid": "pnpm --filter @ledgerhq/device-transport-kit-web-hid",

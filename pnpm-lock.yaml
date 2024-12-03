@@ -376,6 +376,45 @@ importers:
         specifier: workspace:*
         version: link:../config/typescript
 
+  packages/near-wallet:
+    devDependencies:
+      '@ledgerhq/device-management-kit':
+        specifier: workspace:*
+        version: link:../device-management-kit
+      '@ledgerhq/device-signer-kit-near':
+        specifier: workspace:*
+        version: link:../signer/signer-near
+      '@ledgerhq/esbuild-tools':
+        specifier: workspace:*
+        version: link:../tools/esbuild-tools
+      '@ledgerhq/eslint-config-dsdk':
+        specifier: workspace:*
+        version: link:../config/eslint
+      '@ledgerhq/jest-config-dsdk':
+        specifier: workspace:*
+        version: link:../config/jest
+      '@ledgerhq/prettier-config-dsdk':
+        specifier: workspace:*
+        version: link:../config/prettier
+      '@ledgerhq/tsconfig-dsdk':
+        specifier: workspace:*
+        version: link:../config/typescript
+      '@near-wallet-selector/core':
+        specifier: ^8.9.13
+        version: 8.9.14(near-api-js@5.0.1)
+      '@near-wallet-selector/wallet-utils':
+        specifier: ^8.9.13
+        version: 8.9.14(near-api-js@5.0.1)
+      is-mobile:
+        specifier: ^5.0.0
+        version: 5.0.0
+      near-api-js:
+        specifier: ^5.0.1
+        version: 5.0.1
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
+
   packages/signer/context-module:
     dependencies:
       axios:
